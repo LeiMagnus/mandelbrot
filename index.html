@@ -1,0 +1,93 @@
+<html>
+<head>
+<script>
+var col;
+function randomColor(){
+	red=Math.floor(Math.random()*256);
+	green=Math.floor(Math.random()*256);
+	blue=Math.floor(Math.random()*256);
+	return "rgb("+red+","+green+","+blue+")";
+}
+function makeGrid(name,xMax,yMax,style){
+    tmp_grid={
+		name: name,
+		xMax: xMax,
+		yMax: yMax,
+		style: style,
+		box: [],
+		setBoxAttributes: function(){
+			t=document.getElementById(this.name);
+			for(i=0;i<this.xMax;i++){
+				this.box[i]=[];
+				for(j=0;j<this.yMax;j++){
+					this.box[i][j]=t.getElementsByTagName('tr')[i].getElementsByTagName('td')[j];
+					this.box[i][j].active=true;
+					this.box[i][j].x=(i-(this.xMax/2))*2/this.xMax;
+					this.box[i][j].y=(j-(this.yMax*3/4))*2/this.yMax;
+					this.box[i][j].z=[0,0];
+					this.box[i][j].setZ=function(){
+						Re=this.z[0];
+						Im=this.z[1];
+						this.z[0]=(Re*Re-Im*Im)+this.y;
+						this.z[1]=(2*Re*Im)+this.x;
+					}
+					this.box[i][j].isMandelbrot=function(){
+						Re=this.z[0];
+						Im=this.z[1];
+						if(Math.sqrt(Re*Re+Im*Im)<=2){
+							return true;
+						}
+						return false;
+					}
+					this.box[i][j].switchOff=function(){
+						this.active=false;
+						this.style.backgroundColor=col;
+					}
+				}
+			}
+		},
+		operate: function(){
+			col=randomColor();
+			for(i=0;i<this.xMax;i++){
+				for(j=0;j<this.yMax;j++){
+					if(this.box[i][j].active){
+						this.box[i][j].setZ();
+						if(!this.box[i][j].isMandelbrot()){
+							this.box[i][j].switchOff();
+						}
+					}
+				}
+			}
+		},
+		print: function(){
+			result="<table id="+this.name+" style='background-color:black;'>";
+			for(i=0;i<this.xMax;i++){
+				result+="<tr>";
+				for(j=0;j<this.yMax;j++){
+					result+="<td style="+this.style+"></td>";
+				}
+				result+="</tr>";
+			}
+			result+="</table>";
+			return result;
+		}
+	}
+	return tmp_grid;
+}
+
+function run(){
+	grid=makeGrid('space',400,400,'background-color:red;height:2px;width:2px;');
+	document.getElementById('container').innerHTML=grid.print();
+	grid.setBoxAttributes();
+	document.getElementById('space').onclick=function(){
+		grid.operate();
+	}
+}
+
+</script>
+</head>
+<body onload='run();'>
+<div id='container'>
+</div>
+</body>
+</html>
