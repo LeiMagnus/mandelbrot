@@ -3,11 +3,12 @@
 <style>
 body
 {
-font-size:28pt;	
+font-size:28pt;
 }
 </style>
 <script>
 var col;
+var inter=false;
 function randomColor(){
 	red=Math.floor(Math.random()*256);
 	green=Math.floor(Math.random()*256);
@@ -80,21 +81,22 @@ function makeGrid(name,xMax,yMax,style){
 	}
 	return tmp_grid;
 }
-
 function run(){
-	grid=makeGrid('space',400,400,'background-color:red;height:2px;width:2px;');
+	grid=makeGrid('space',200,200,'background-color:black;height:2px;width:2px;');
 	document.getElementById('container').innerHTML=grid.print();
 	grid.setBoxAttributes();
 	document.getElementById('space').onclick=function(){
-		grid.operate();
+		if(!inter){
+			inter=setInterval('grid.operate();',100);
+		}
 	}
 }
 
 </script>
 </head>
 <body onload='run();'>
-Zoom out to see the whole grid and then click on the grid to itterate the Mandelbrot Set.
 <div id='container'>
 </div>
+Click the big ol' black square!
 </body>
 </html>
